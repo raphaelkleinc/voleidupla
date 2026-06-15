@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏐 Vôlei</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#ffffff; --bg2:#f5f5f4; --bg3:#eeece8;
+  --text:#1a1a1a; --text2:#6b6b6b; --text3:#a0a09a;
+  --border:rgba(0,0,0,.12); --border2:rgba(0,0,0,.22);
+  --radius-md:8px; --radius-lg:12px;
+  --info-bg:#e6f1fb;   --info-text:#185fa5;  --info-bdr:rgba(24,95,165,.3);
+  --ok-bg:#eaf3de;     --ok-text:#3b6d11;    --ok-bdr:rgba(59,109,17,.3);
+  --warn-bg:#faeeda;   --warn-text:#854f0b;  --warn-bdr:rgba(133,79,11,.3);
+  --danger-bg:#fcebeb; --danger-text:#a32d2d;--danger-bdr:rgba(163,45,45,.3);
+}
+@media (prefers-color-scheme:dark) {
+  :root {
+    --bg:#1c1c1a; --bg2:#252523; --bg3:#2e2e2b;
+    --text:#f0ede8; --text2:#9e9b95; --text3:#5c5b56;
+    --border:rgba(255,255,255,.1); --border2:rgba(255,255,255,.2);
+    --info-bg:#0c447c;  --info-text:#b5d4f4;
+    --ok-bg:#27500a;    --ok-text:#c0dd97;
+    --warn-bg:#633806;  --warn-text:#fac775;
+    --danger-bg:#791f1f;--danger-text:#f7c1c1;
+  }
+}
+body { font-family:system-ui,-apple-system,sans-serif; background:var(--bg3); color:var(--text); font-size:14px; min-height:100vh; }
+.app { max-width:680px; margin:0 auto; padding-bottom:4rem; }
+.header { background:var(--bg); border-bottom:0.5px solid var(--border); padding:1rem 1.25rem; position:sticky; top:0; z-index:100; }
+.header-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:.75rem; }
+.app-title { font-size:18px; font-weight:500; display:flex; align-items:center; gap:8px; }
+.header-actions { display:flex; gap:8px; }
+.month-nav { display:flex; align-items:center; justify-content:center; gap:1rem; }
+.month-label { font-size:15px; font-weight:500; min-width:160px; text-align:center; }
+.nav-btn { background:none; border:none; cursor:pointer; color:var(--text2); font-size:18px; padding:4px 8px; border-radius:var(--radius-md); line-height:1; }
+.nav-btn:hover { background:var(--bg2); color:var(--text); }
+.btn { background:transparent; border:0.5px solid var(--border2); border-radius:var(--radius-md); padding:6px 12px; font-size:13px; color:var(--text); cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:background .15s; font-family:inherit; }
+.btn:hover { background:var(--bg2); }
+.btn-sm { padding:4px 8px; font-size:12px; }
+.btn-primary { background:var(--info-bg); border-color:var(--info-bdr); color:var(--info-text); font-weight:500; }
+.btn-primary:hover { opacity:.85; }
+.btn-danger { border-color:var(--danger-bdr); color:var(--danger-text); }
+.btn-danger:hover { background:var(--danger-bg); }
+.body { padding:1rem 1.25rem; }
+.game-list { display:flex; flex-direction:column; gap:.75rem; }
+.game-card { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:1rem 1.25rem; cursor:pointer; transition:border-color .15s; }
+.game-card:hover { border-color:var(--border2); }
+.game-card.expanded { border-color:var(--info-bdr); }
+.game-header { display:flex; align-items:flex-start; justify-content:space-between; gap:.5rem; }
+.game-info { flex:1; min-width:0; }
+.game-date-line { font-size:15px; font-weight:500; display:flex; align-items:center; gap:8px; }
+.game-meta { font-size:13px; color:var(--text2); margin-top:4px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.game-meta a { color:var(--info-text); text-decoration:none; }
+.game-meta a:hover { text-decoration:underline; }
+.game-badges { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+.badge { font-size:11px; padding:2px 8px; border-radius:20px; font-weight:500; display:inline-flex; align-items:center; gap:4px; }
+.badge-blue   { background:var(--info-bg);   color:var(--info-text); }
+.badge-green  { background:var(--ok-bg);     color:var(--ok-text); }
+.badge-amber  { background:var(--warn-bg);   color:var(--warn-text); }
+.badge-gray   { background:var(--bg2);       color:var(--text2); }
+.game-detail { margin-top:1rem; padding-top:1rem; border-top:0.5px solid var(--border); display:none; }
+.game-detail.open { display:block; }
+.detail-section { margin-bottom:1rem; }
+.detail-label { font-size:11px; color:var(--text3); font-weight:500; text-transform:uppercase; letter-spacing:.05em; margin-bottom:.5rem; }
+.player-chips { display:flex; flex-wrap:wrap; gap:6px; }
+.player-chip { background:var(--bg2); border:0.5px solid var(--border); border-radius:20px; padding:5px 12px; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all .15s; user-select:none; }
+.player-chip:hover { border-color:var(--border2); }
+.player-chip.confirmed { background:var(--ok-bg); border-color:var(--ok-bdr); color:var(--ok-text); }
+.player-chip.payer { background:var(--warn-bg); border-color:var(--warn-bdr); color:var(--warn-text); }
+.cost-input { padding:7px 10px; border:0.5px solid var(--border2); border-radius:var(--radius-md); background:var(--bg2); color:var(--text); font-size:13px; width:180px; font-family:inherit; }
+.split-result { background:var(--bg2); border-radius:var(--radius-md); padding:.75rem 1rem; font-size:13px; margin-top:.5rem; }
+.split-row { display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:0.5px solid var(--border); }
+.split-row:last-child { border:none; }
+.split-row .sname { color:var(--text2); }
+.split-row .sval { font-weight:500; display:flex; align-items:center; }
+.copy-btns { display:flex; gap:8px; flex-wrap:wrap; margin-top:.75rem; }
+.game-actions-row { display:flex; gap:6px; align-items:center; flex-shrink:0; }
+.empty-month { text-align:center; padding:3rem 1rem; color:var(--text2); }
+.empty-month i { font-size:40px; margin-bottom:.75rem; display:block; color:var(--text3); }
+.modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:200; align-items:center; justify-content:center; padding:1rem; }
+.modal-bg.open { display:flex; }
+.modal { background:var(--bg); border-radius:var(--radius-lg); padding:1.5rem; width:100%; max-width:420px; border:0.5px solid var(--border); max-height:90vh; overflow-y:auto; }
+.modal h2 { font-size:16px; font-weight:500; margin-bottom:1rem; display:flex; align-items:center; gap:8px; }
+.form-group { margin-bottom:.75rem; }
+.form-group label { display:block; font-size:12px; color:var(--text2); margin-bottom:4px; font-weight:500; }
+.form-group input,.form-group select,.form-group textarea { width:100%; padding:7px 10px; border:0.5px solid var(--border2); border-radius:var(--radius-md); background:var(--bg2); color:var(--text); font-size:13px; font-family:inherit; }
+.form-group textarea { resize:vertical; min-height:60px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:.5rem; }
+.modal-actions { display:flex; gap:8px; margin-top:1rem; justify-content:flex-end; }
+.tab-bar { display:flex; gap:4px; background:var(--bg2); border-radius:var(--radius-md); padding:3px; margin-bottom:.75rem; }
+.tab-btn { flex:1; padding:6px; font-size:12px; border:none; background:none; cursor:pointer; border-radius:6px; color:var(--text2); font-weight:500; font-family:inherit; transition:background .15s; }
+.tab-btn.active { background:var(--bg); color:var(--text); }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+.list-item { display:flex; align-items:center; justify-content:space-between; padding:7px 0; border-bottom:0.5px solid var(--border); }
+.list-item:last-child { border:none; }
+.list-item-name { font-size:14px; font-weight:500; }
+.list-item-meta { font-size:12px; color:var(--text2); margin-top:2px; }
+.list-scroll { max-height:200px; overflow-y:auto; }
+.copy-area { width:100%; min-height:200px; padding:10px; border:0.5px solid var(--border2); border-radius:var(--radius-md); background:var(--bg2); color:var(--text); font-size:13px; font-family:inherit; resize:vertical; }
+.toast { position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%); background:var(--text); color:var(--bg); padding:8px 18px; border-radius:20px; font-size:13px; font-weight:500; opacity:0; transition:opacity .2s; pointer-events:none; z-index:999; white-space:nowrap; }
+.toast.show { opacity:1; }
+.sync-dot { width:7px; height:7px; border-radius:50%; background:var(--ok-text); display:inline-block; margin-left:6px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+@keyframes volleyball-spin { 0%{transform:rotate(0deg) scale(1)} 25%{transform:rotate(90deg) scale(1.08)} 50%{transform:rotate(180deg) scale(1)} 75%{transform:rotate(270deg) scale(1.08)} 100%{transform:rotate(360deg) scale(1)} }
+.vball { width:22px; height:22px; flex-shrink:0; animation:volleyball-spin 3s linear infinite; filter:drop-shadow(0 1px 2px rgba(0,0,0,.18)); }
+@media (max-width:480px) { .header { padding:.75rem 1rem; } .body { padding:.75rem 1rem; } .app-title span { display:none; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-top">
+      <div class="app-title">
+        <i class="ti ti-ball-volleyball"></i>
+        <span>Vôlei do Grupo</span>
+        <span class="sync-dot" title="Sincronizado em tempo real"></span>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-sm" onclick="openModal('managersModal')"><i class="ti ti-settings"></i> Cadastros</button>
+        <button class="btn btn-primary btn-sm" onclick="openModal('addGameModal')"><i class="ti ti-plus"></i> Novo jogo</button>
+      </div>
+    </div>
+    <div class="month-nav">
+      <button class="nav-btn" onclick="changeMonth(-1)"><i class="ti ti-chevron-left"></i></button>
+      <span class="month-label" id="monthLabel">—</span>
+      <button class="nav-btn" onclick="changeMonth(1)"><i class="ti ti-chevron-right"></i></button>
+    </div>
+  </div>
+  <div class="body">
+    <div class="game-list" id="gameList">
+      <div class="empty-month">
+        <i class="ti ti-loader-2" style="animation:spin 1s linear infinite"></i>
+        <p>Conectando...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Novo Jogo -->
+<div class="modal-bg" id="addGameModal">
+  <div class="modal">
+    <h2><i class="ti ti-calendar-plus"></i> Marcar jogo</h2>
+    <div class="form-group"><label>Data</label><input type="date" id="gDate"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Início</label><input type="time" id="gStart" value="16:00"></div>
+      <div class="form-group"><label>Fim</label><input type="time" id="gEnd" value="18:00"></div>
+    </div>
+    <div class="form-group"><label>Quadra</label><select id="gVenue"><option value="">Selecionar quadra...</option></select></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('addGameModal')">Cancelar</button>
+      <button class="btn btn-primary" onclick="addGame()">Marcar jogo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Cadastros -->
+<div class="modal-bg" id="managersModal">
+  <div class="modal">
+    <h2><i class="ti ti-database"></i> Cadastros</h2>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('players')"><i class="ti ti-users"></i> Jogadores</button>
+      <button class="tab-btn" onclick="switchTab('venues')"><i class="ti ti-map-pin"></i> Quadras</button>
+    </div>
+    <div class="tab-content active" id="tab-players">
+      <div class="form-row" style="margin-bottom:.5rem">
+        <div class="form-group" style="margin:0"><label>Nome</label><input type="text" id="pName" placeholder="Nome completo"></div>
+        <div class="form-group" style="margin:0"><label>WhatsApp</label><input type="text" id="pContact" placeholder="(51) 9..."></div>
+      </div>
+      <div class="form-group"><label>Chave PIX</label><input type="text" id="pPix" placeholder="CPF, e-mail, telefone..."></div>
+      <div style="text-align:right;margin-bottom:.75rem">
+        <button class="btn btn-primary btn-sm" onclick="addPlayer()"><i class="ti ti-plus"></i> Adicionar jogador</button>
+      </div>
+      <div class="list-scroll" id="playersList"><p style="color:var(--text3);font-size:13px;text-align:center;padding:.5rem">Nenhum jogador ainda</p></div>
+    </div>
+    <div class="tab-content" id="tab-venues">
+      <div class="form-group"><label>Nome da quadra</label><input type="text" id="vName" placeholder="Ex: Winge Sports"></div>
+      <div class="form-group"><label>Endereço ou link Google Maps</label><textarea id="vAddress" placeholder="Cole o link do Maps ou o endereço completo"></textarea></div>
+      <div style="text-align:right;margin-bottom:.75rem">
+        <button class="btn btn-primary btn-sm" onclick="addVenue()"><i class="ti ti-plus"></i> Adicionar quadra</button>
+      </div>
+      <div class="list-scroll" id="venuesList"><p style="color:var(--text3);font-size:13px;text-align:center;padding:.5rem">Nenhuma quadra ainda</p></div>
+    </div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('managersModal')">Fechar</button></div>
+  </div>
+</div>
+
+<!-- Modal WhatsApp -->
+<div class="modal-bg" id="copyModal">
+  <div class="modal">
+    <h2><i class="ti ti-brand-whatsapp"></i> Copiar para WhatsApp</h2>
+    <textarea class="copy-area" id="copyText" readonly></textarea>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('copyModal')">Fechar</button>
+      <button class="btn btn-primary" id="copyBtn" onclick="doCopy()"><i class="ti ti-copy"></i> Copiar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp }                              from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, push, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+// ── Firebase ───────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey:            "AIzaSyBaHMewuyReIt9U72PEIwA7iipg1ZTBIFE",
+  authDomain:        "calendario-amelia-2202c.firebaseapp.com",
+  databaseURL:       "https://calendario-amelia-2202c-default-rtdb.firebaseio.com",
+  projectId:         "calendario-amelia-2202c",
+  storageBucket:     "calendario-amelia-2202c.firebasestorage.app",
+  messagingSenderId: "329381802500",
+  appId:             "1:329381802500:web:9e6d1b7c9110478974fb51"
+};
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+
+// ── estado local ───────────────────────────────────────────────
+let players = [], venues = [], games = [];
+let currentYear  = new Date().getFullYear();
+let currentMonth = new Date().getMonth();
+let expandedGame = null;
+
+// ── listeners tempo real ───────────────────────────────────────
+onValue(ref(db, 'volei/players'), snap => {
+  const val = snap.val() || {};
+  players = Object.entries(val).map(([id,d]) => ({id,...d})).sort((a,b) => a.name.localeCompare(b.name));
+  render();
+});
+onValue(ref(db, 'volei/venues'), snap => {
+  const val = snap.val() || {};
+  venues = Object.entries(val).map(([id,d]) => ({id,...d})).sort((a,b) => a.name.localeCompare(b.name));
+  render();
+});
+onValue(ref(db, 'volei/games'), snap => {
+  const val = snap.val() || {};
+  games = Object.entries(val).map(([id,d]) => ({id,...d})).sort((a,b) => a.date.localeCompare(b.date));
+  render();
+});
+
+// ── helpers ────────────────────────────────────────────────────
+const MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+function showToast(msg, ms=1800) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), ms);
+}
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtDate(d) { const [y,m,dd]=d.split('-'); return `${dd}/${m}/${y}`; }
+function fmtBRL(n) { return Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function parseBRL(s) { return parseFloat(String(s).replace(/\./g,'').replace(',','.')) || 0; }
+
+// ── modais ─────────────────────────────────────────────────────
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-bg').forEach(m =>
+  m.addEventListener('click', e => { if (e.target===m) m.classList.remove('open'); })
+);
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active',['players','venues'][i]===tab));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+}
+function changeMonth(dir) {
+  currentMonth += dir;
+  if (currentMonth>11) { currentMonth=0; currentYear++; }
+  if (currentMonth<0)  { currentMonth=11; currentYear--; }
+  render();
+}
+
+// ── render ─────────────────────────────────────────────────────
+function render() {
+  document.getElementById('monthLabel').textContent = `${MONTHS_PT[currentMonth]} ${currentYear}`;
+
+  // select de quadras
+  document.getElementById('gVenue').innerHTML =
+    '<option value="">Selecionar quadra...</option>' +
+    venues.map(v => `<option value="${v.id}">${esc(v.name)}</option>`).join('');
+
+  // lista jogadores no modal
+  const plEl = document.getElementById('playersList');
+  plEl.innerHTML = players.length
+    ? players.map(p => `<div class="list-item">
+        <div>
+          <div class="list-item-name">${esc(p.name)}</div>
+          <div class="list-item-meta">${p.contact?'📱 '+esc(p.contact):''}${p.pix?' · PIX: '+esc(p.pix):''}</div>
+        </div>
+        <button class="btn btn-sm btn-danger" onclick="removePlayer('${p.id}')"><i class="ti ti-trash"></i></button>
+      </div>`).join('')
+    : '<p style="color:var(--text3);font-size:13px;text-align:center;padding:.5rem">Nenhum jogador ainda</p>';
+
+  // lista quadras no modal
+  const vEl = document.getElementById('venuesList');
+  vEl.innerHTML = venues.length
+    ? venues.map(v => `<div class="list-item">
+        <div>
+          <div class="list-item-name">${esc(v.name)}</div>
+          <div class="list-item-meta">${esc(v.address||'')}</div>
+        </div>
+        <button class="btn btn-sm btn-danger" onclick="removeVenue('${v.id}')"><i class="ti ti-trash"></i></button>
+      </div>`).join('')
+    : '<p style="color:var(--text3);font-size:13px;text-align:center;padding:.5rem">Nenhuma quadra ainda</p>';
+
+  // jogos do mês
+  const monthGames = games.filter(g => {
+    const [y,m] = g.date.split('-');
+    return parseInt(y)===currentYear && parseInt(m)-1===currentMonth;
+  });
+  const listEl = document.getElementById('gameList');
+  if (!monthGames.length) {
+    listEl.innerHTML = `<div class="empty-month"><i class="ti ti-calendar-off"></i><p>Nenhum jogo em ${MONTHS_PT[currentMonth]}</p><p style="font-size:12px;margin-top:.5rem;color:var(--text3)">Clique em "+ Novo jogo" para marcar</p></div>`;
+    return;
+  }
+  listEl.innerHTML = monthGames.map(g => renderGame(g)).join('');
+  // restaurar split do card expandido
+  if (expandedGame) {
+    const g = monthGames.find(x => x.id===expandedGame);
+    if (g) {
+      const inp = document.getElementById('cost-input-'+expandedGame);
+      if (inp && document.activeElement!==inp) inp.value = g.cost ? fmtBRL(g.cost) : '';
+      renderSplit(g);
+    }
+  }
+}
+
+function renderGame(g) {
+  const isExp = expandedGame === g.id;
+  const confirmed = g.confirmed || [];
+  const venue = venues.find(v => v.id===g.venueId);
+  const payer = players.find(p => p.id===g.payerId);
+  const addr = venue ? venue.address : '';
+  const isLink = addr && (addr.startsWith('http://') || addr.startsWith('https://'));
+  const venueLabel = isLink
+    ? `<a href="${esc(addr)}" target="_blank" onclick="event.stopPropagation()">${esc(g.venueName)} <i class="ti ti-external-link" style="font-size:11px"></i></a>`
+    : esc(g.venueName||'');
+
+  let badges = `<span class="badge badge-blue"><i class="ti ti-users" style="font-size:10px"></i> ${confirmed.length} confirmado${confirmed.length!==1?'s':''}</span>`;
+  if (payer) badges += `<span class="badge badge-amber"><i class="ti ti-credit-card" style="font-size:10px"></i> ${esc(payer.name)} pagou</span>`;
+  if (g.cost) badges += `<span class="badge badge-green">R$ ${fmtBRL(g.cost)}</span>`;
+
+  let detail = '';
+  if (isExp) {
+    const presenceChips = players.map(p => {
+      const ok = confirmed.includes(p.id);
+      return `<div class="player-chip${ok?' confirmed':''}" onclick="event.stopPropagation();toggleConfirm('${g.id}','${p.id}')">
+        <i class="ti ti-${ok?'check':'plus'}" style="font-size:11px"></i>${esc(p.name)}</div>`;
+    }).join('') || '<span style="color:var(--text3);font-size:12px">Cadastre jogadores primeiro</span>';
+
+    const payerChips = players.map(p => {
+      const isPayer = g.payerId===p.id;
+      return `<div class="player-chip${isPayer?' payer':''}" onclick="event.stopPropagation();setPayer('${g.id}','${p.id}')">
+        <i class="ti ti-${isPayer?'star':'user'}" style="font-size:11px"></i>${esc(p.name)}</div>`;
+    }).join('') || '<span style="color:var(--text3);font-size:12px">Cadastre jogadores primeiro</span>';
+
+    detail = `<div class="game-detail open">
+      <div class="detail-section">
+        <div class="detail-label">Confirmar presença</div>
+        <div class="player-chips">${presenceChips}</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Quem pagou a quadra?</div>
+        <div class="player-chips">${payerChips}</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Valor total da quadra (R$)</div>
+        <input class="cost-input" type="text" inputmode="numeric" placeholder="0,00"
+          id="cost-input-${g.id}"
+          value="${g.cost ? fmtBRL(g.cost) : ''}"
+          onclick="event.stopPropagation()"
+          oninput="event.stopPropagation();onCostInput(event,'${g.id}')"
+          onblur="saveCost('${g.id}')">
+        <div class="split-result" id="split-${g.id}"></div>
+      </div>
+      <div class="copy-btns">
+        <button class="btn btn-sm" onclick="event.stopPropagation();openCopy('${g.id}','game')"><i class="ti ti-brand-whatsapp"></i> Resumo do jogo</button>
+        <button class="btn btn-sm" onclick="event.stopPropagation();openCopy('${g.id}','payment')"><i class="ti ti-receipt"></i> Divisão do valor</button>
+      </div>
+    </div>`;
+  }
+
+  return `<div class="game-card${isExp?' expanded':''}" onclick="toggleExpand('${g.id}')">
+    <div class="game-header">
+      <div class="game-info">
+        <div class="game-date-line">
+          <svg class="vball" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs><clipPath id="bc${g.id}"><circle cx="50" cy="50" r="47"/></clipPath></defs>
+            <path d="M50,3 A47,47 0 0,0 3,50 A47,47 0 0,0 50,97 Q20,75 22,50 Q20,25 50,3 Z" fill="#1a5fa8" clip-path="url(#bc${g.id})"/>
+            <path d="M50,3 A47,47 0 0,1 97,50 A47,47 0 0,1 50,97 Q80,75 78,50 Q80,25 50,3 Z" fill="#1a5fa8" clip-path="url(#bc${g.id})"/>
+            <path d="M50,3 Q80,25 78,50 Q80,75 50,97 Q20,75 22,50 Q20,25 50,3 Z" fill="#f5e030" clip-path="url(#bc${g.id})"/>
+            <path d="M22,50 Q20,25 50,3 Q35,25 36,50 Q35,75 50,97 Q20,75 22,50 Z" fill="white" opacity="0.9" clip-path="url(#bc${g.id})"/>
+            <path d="M78,50 Q80,25 50,3 Q65,25 64,50 Q65,75 50,97 Q80,75 78,50 Z" fill="white" opacity="0.9" clip-path="url(#bc${g.id})"/>
+            <circle cx="50" cy="50" r="47" fill="none" stroke="#b8970a" stroke-width="2"/>
+          </svg>
+          Jogo ${fmtDate(g.date)}
+        </div>
+        <div class="game-meta">
+          <i class="ti ti-clock" style="font-size:12px"></i> ${g.start} às ${g.end}
+          &nbsp;·&nbsp;
+          <i class="ti ti-map-pin" style="font-size:12px"></i> ${venueLabel}
+        </div>
+        <div class="game-badges">${badges}</div>
+      </div>
+      <div class="game-actions-row" onclick="event.stopPropagation()">
+        <button class="btn btn-sm" style="color:var(--text2)" onclick="toggleExpand('${g.id}')"><i class="ti ti-chevron-${isExp?'up':'down'}"></i></button>
+        <button class="btn btn-sm btn-danger" onclick="removeGame('${g.id}')"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>
+    ${detail}
+  </div>`;
+}
+
+// ── split ──────────────────────────────────────────────────────
+function renderSplit(g) {
+  const el = document.getElementById('split-'+g.id);
+  if (!el) return;
+  const cost = parseFloat(g.cost) || 0;
+  const confirmed = g.confirmed || [];
+  if (!cost || !confirmed.length) {
+    el.innerHTML = '<p style="color:var(--text3);font-size:12px">Informe o valor e confirme presenças para calcular.</p>';
+    return;
+  }
+  const per = cost / confirmed.length;
+  el.innerHTML =
+    `<div style="font-size:12px;color:var(--text2);margin-bottom:6px">R$ ${fmtBRL(cost)} ÷ ${confirmed.length} pessoas = <strong>R$ ${fmtBRL(per)} por pessoa</strong></div>` +
+    confirmed.map(pid => {
+      const p = players.find(x => x.id===pid);
+      const isPayer = g.payerId===pid;
+      const hasPaid = isPayer || (g.paid||[]).includes(pid);
+      const chip = isPayer
+        ? `<i class="ti ti-check" style="color:var(--ok-text);font-size:18px"></i>`
+        : `<span onclick="togglePaid('${g.id}','${pid}')" style="cursor:pointer">
+             ${hasPaid
+               ? `<i class="ti ti-check" style="color:var(--ok-text);font-size:18px"></i>`
+               : `<span style="color:var(--text2)">R$ ${fmtBRL(per)}</span>`}
+           </span>`;
+      return `<div class="split-row"><span class="sname">${esc(p?p.name:'?')}</span><span class="sval">${chip}</span></div>`;
+    }).join('');
+}
+
+// ── ações jogadores / quadras ──────────────────────────────────
+function addPlayer() {
+  const name = document.getElementById('pName').value.trim();
+  const contact = document.getElementById('pContact').value.trim();
+  const pix = document.getElementById('pPix').value.trim();
+  if (!name) return showToast('Informe o nome');
+  push(ref(db,'volei/players'), {name,contact,pix}).then(() => {
+    document.getElementById('pName').value = '';
+    document.getElementById('pContact').value = '';
+    document.getElementById('pPix').value = '';
+    showToast('Jogador adicionado ✓');
+  });
+}
+function removePlayer(id) {
+  if (!confirm('Remover jogador?')) return;
+  remove(ref(db,`volei/players/${id}`));
+}
+function addVenue() {
+  const name = document.getElementById('vName').value.trim();
+  const address = document.getElementById('vAddress').value.trim();
+  if (!name) return showToast('Informe o nome da quadra');
+  push(ref(db,'volei/venues'), {name,address}).then(() => {
+    document.getElementById('vName').value = '';
+    document.getElementById('vAddress').value = '';
+    showToast('Quadra adicionada ✓');
+  });
+}
+function removeVenue(id) {
+  if (!confirm('Remover quadra?')) return;
+  remove(ref(db,`volei/venues/${id}`));
+}
+
+// ── ações jogos ────────────────────────────────────────────────
+function addGame() {
+  const date = document.getElementById('gDate').value;
+  const start = document.getElementById('gStart').value;
+  const end = document.getElementById('gEnd').value;
+  const venueId = document.getElementById('gVenue').value;
+  if (!date) return showToast('Selecione a data');
+  if (!venueId) return showToast('Selecione a quadra');
+  const venue = venues.find(v => v.id===venueId);
+  push(ref(db,'volei/games'), {
+    date, start, end, venueId,
+    venueName: venue ? venue.name : '',
+    venueAddress: venue ? venue.address : '',
+    confirmed: [], payerId: null, cost: '', paid: []
+  }).then(() => {
+    closeModal('addGameModal');
+    const [y,m] = date.split('-');
+    currentYear = parseInt(y); currentMonth = parseInt(m)-1;
+    showToast('Jogo marcado ✓');
+  });
+}
+function removeGame(id) {
+  if (!confirm('Excluir este jogo?')) return;
+  if (expandedGame===id) expandedGame = null;
+  remove(ref(db,`volei/games/${id}`)).then(() => showToast('Jogo removido'));
+}
+function toggleExpand(id) {
+  expandedGame = expandedGame===id ? null : id;
+  render();
+}
+function toggleConfirm(gameId, playerId) {
+  const g = games.find(x => x.id===gameId); if (!g) return;
+  const arr = [...(g.confirmed||[])];
+  const idx = arr.indexOf(playerId);
+  if (idx>=0) arr.splice(idx,1); else arr.push(playerId);
+  update(ref(db,`volei/games/${gameId}`), {confirmed: arr});
+}
+function setPayer(gameId, playerId) {
+  const g = games.find(x => x.id===gameId); if (!g) return;
+  const newPayer = g.payerId===playerId ? null : playerId;
+  update(ref(db,`volei/games/${gameId}`), {payerId: newPayer});
+}
+function togglePaid(gameId, playerId) {
+  const g = games.find(x => x.id===gameId); if (!g) return;
+  const paid = [...(g.paid||[])];
+  const idx = paid.indexOf(playerId);
+  if (idx>=0) paid.splice(idx,1); else paid.push(playerId);
+  update(ref(db,`volei/games/${gameId}`), {paid});
+}
+function onCostInput(event, gameId) {
+  const g = games.find(x => x.id===gameId); if (!g) return;
+  g.cost = parseBRL(event.target.value) || '';
+  renderSplit(g);
+}
+function saveCost(gameId) {
+  const inp = document.getElementById('cost-input-'+gameId); if (!inp) return;
+  const val = parseBRL(inp.value);
+  inp.value = val ? fmtBRL(val) : '';
+  update(ref(db,`volei/games/${gameId}`), {cost: val||''});
+  const g = games.find(x => x.id===gameId);
+  if (g) { g.cost = val||''; renderSplit(g); }
+}
+
+// ── whatsapp ───────────────────────────────────────────────────
+function openCopy(gameId, type) {
+  const g = games.find(x => x.id===gameId); if (!g) return;
+  const confirmedPlayers = (g.confirmed||[]).map(pid => players.find(p => p.id===pid)).filter(Boolean);
+  const payer = players.find(p => p.id===g.payerId);
+  const venue = venues.find(v => v.id===g.venueId);
+  const cost = parseFloat(g.cost)||0;
+  const per = confirmedPlayers.length ? cost/confirmedPlayers.length : 0;
+  let txt = '';
+  if (type==='game') {
+    txt = `🏐 *JOGO DE VÔLEI*\n📅 ${fmtDate(g.date)} — ${g.start} às ${g.end}\n📍 ${g.venueName}`
+        + (venue&&venue.address ? `\n🗺 ${venue.address}` : '')
+        + `\n\n✅ *Confirmados (${confirmedPlayers.length}):*\n`
+        + (confirmedPlayers.length ? confirmedPlayers.map((p,i)=>`${i+1}. ${p.name}`).join('\n') : 'Ninguém ainda')
+        + `\n\n👆 Confirme sua presença no link do grupo!`;
+  } else {
+    txt = `💰 *DIVISÃO DA QUADRA*\n📅 ${fmtDate(g.date)} — ${g.venueName}\n\n`
+        + `💳 Total: R$ ${fmtBRL(cost)} ÷ ${confirmedPlayers.length} pessoas = *R$ ${fmtBRL(per)} por pessoa*\n`
+        + (payer ? `\n🏦 *Pagar para: ${payer.name}*\n${payer.pix?'PIX: `'+payer.pix+'`':''}` : '')
+        + `\n\n📋 *Lista:*\n`
+        + confirmedPlayers.map(p => {
+            if (g.payerId===p.id) return `• ${p.name}: pagou a quadra 🏦`;
+            const quitou = (g.paid||[]).includes(p.id);
+            return `• ${p.name}: R$ ${fmtBRL(per)}${quitou?' ✓ quitou':''}`;
+          }).join('\n');
+  }
+  document.getElementById('copyText').value = txt;
+  openModal('copyModal');
+}
+function doCopy() {
+  const t = document.getElementById('copyText'); t.select();
+  try { document.execCommand('copy'); } catch { navigator.clipboard.writeText(t.value); }
+  showToast('Copiado ✓');
+  const btn = document.getElementById('copyBtn');
+  btn.innerHTML = '<i class="ti ti-check"></i> Copiado!';
+  setTimeout(() => { btn.innerHTML = '<i class="ti ti-copy"></i> Copiar'; }, 1800);
+}
+
+// ── expor ao window para onclick= no HTML ──────────────────────
+Object.assign(window, {
+  changeMonth, openModal, closeModal, switchTab,
+  addPlayer, removePlayer, addVenue, removeVenue,
+  addGame, removeGame, toggleExpand, toggleConfirm,
+  setPayer, togglePaid, onCostInput, saveCost,
+  openCopy, doCopy
+});
+
+// ── init ───────────────────────────────────────────────────────
+document.getElementById('gDate').value = new Date().toISOString().split('T')[0];
+document.getElementById('monthLabel').textContent = MONTHS_PT[currentMonth] + ' ' + new Date().getFullYear();
+</script>
+</body>
+</html>
