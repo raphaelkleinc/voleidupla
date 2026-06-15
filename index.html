@@ -11,8 +11,8 @@
      Firebase Console → Configurações do projeto → Seus apps
      ==================================================== -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getFirestore, collection, doc, onSnapshot, addDoc, setDoc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue, set, remove, push, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey:            "AIzaSyBaHMewuyReIt9U72PEIwA7iipg1ZTBIFE",
@@ -24,43 +24,45 @@
     appId:             "1:329381802500:web:9e6d1b7c9110478974fb51"
   };
 
-  const app  = initializeApp(firebaseConfig);
-  const db   = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
 
-  // ── coleções ──────────────────────────────────────────
-  const playersCol = collection(db, "volei_players");
-  const venuesCol  = collection(db, "volei_venues");
-  const gamesCol   = collection(db, "volei_games");
-
-  // ── estado local ──────────────────────────────────────
   window._vApp = { players: [], venues: [], games: [] };
 
-  // ── listeners em tempo real ───────────────────────────
-  onSnapshot(query(playersCol, orderBy("name")), snap => {
-    window._vApp.players = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  // ── listeners em tempo real (igual ao Amélia) ─────────
+  onValue(ref(db, 'volei/players'), snap => {
+    const val = snap.val() || {};
+    window._vApp.players = Object.entries(val)
+      .map(([id, d]) => ({ id, ...d }))
+      .sort((a, b) => a.name.localeCompare(b.name));
     render();
   });
-  onSnapshot(query(venuesCol, orderBy("name")), snap => {
-    window._vApp.venues = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+  onValue(ref(db, 'volei/venues'), snap => {
+    const val = snap.val() || {};
+    window._vApp.venues = Object.entries(val)
+      .map(([id, d]) => ({ id, ...d }))
+      .sort((a, b) => a.name.localeCompare(b.name));
     render();
   });
-  onSnapshot(query(gamesCol, orderBy("date")), snap => {
-    window._vApp.games = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+  onValue(ref(db, 'volei/games'), snap => {
+    const val = snap.val() || {};
+    window._vApp.games = Object.entries(val)
+      .map(([id, d]) => ({ id, ...d }))
+      .sort((a, b) => a.date.localeCompare(b.date));
     render();
   });
 
   // ── helpers expostos ao window ────────────────────────
   window._fb = {
-    // players
-    addPlayer: (data)       => addDoc(playersCol, data),
-    removePlayer: (id)      => deleteDoc(doc(db, "volei_players", id)),
-    // venues
-    addVenue: (data)        => addDoc(venuesCol, data),
-    removeVenue: (id)       => deleteDoc(doc(db, "volei_venues", id)),
-    // games
-    addGame: (data)         => addDoc(gamesCol, data),
-    removeGame: (id)        => deleteDoc(doc(db, "volei_games", id)),
-    updateGame: (id, data)  => updateDoc(doc(db, "volei_games", id), data),
+    addPlayer:    (data)      => push(ref(db, 'volei/players'), data),
+    removePlayer: (id)        => remove(ref(db, `volei/players/${id}`)),
+    addVenue:     (data)      => push(ref(db, 'volei/venues'), data),
+    removeVenue:  (id)        => remove(ref(db, `volei/venues/${id}`)),
+    addGame:      (data)      => push(ref(db, 'volei/games'), data),
+    removeGame:   (id)        => remove(ref(db, `volei/games/${id}`)),
+    updateGame:   (id, data)  => update(ref(db, `volei/games/${id}`), data),
   };
 </script>
 
