@@ -555,7 +555,7 @@ function openCopy(gameId, type) {
         + (venue&&venue.address ? `\n🗺 ${venue.address}` : '')
         + `\n\n✅ *Confirmados (${confirmedPlayers.length}):*\n`
         + (confirmedPlayers.length ? confirmedPlayers.map((p,i)=>`${i+1}. ${p.name}`).join('\n') : 'Ninguém ainda')
-        + `\n\n👆 Confirme sua presença no link do grupo!`;
+        + `\n\n👆 Confirme sua presença:\nhttps://raphaelkleinc.github.io/voleidupla/`;
   } else {
     txt = `💰 *DIVISÃO DA QUADRA*\n📅 ${fmtDate(g.date)} — ${g.venueName}\n\n`
         + `💳 Total: R$ ${fmtBRL(cost)} ÷ ${confirmedPlayers.length} pessoas = *R$ ${fmtBRL(per)} por pessoa*\n`
