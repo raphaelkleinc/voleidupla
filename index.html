@@ -46,15 +46,7 @@
   });
   onSnapshot(query(gamesCol, orderBy("date")), snap => {
     window._vApp.games = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    if (expandedGame) {
-      // card aberto: atualiza só o split, não re-renderiza o card inteiro
-      const g = window._vApp.games.find(x => x.id === expandedGame);
-      if (g) renderSplit(g);
-      // atualiza badges sem fechar o card
-      renderBadges(expandedGame);
-    } else {
-      render();
-    }
+    render();
   });
 
   // ── helpers expostos ao window ────────────────────────
@@ -502,8 +494,17 @@ function render() {
   }
 
   listEl.innerHTML = monthGames.map(g => renderGame(g, players, venues)).join('');
-  // renderizar divisões dos jogos expandidos
-  monthGames.forEach(g => { if (expandedGame === g.id) renderSplit(g); });
+  // após rebuild do DOM, restaurar input de custo e renderizar split
+  if (expandedGame) {
+    const g = monthGames.find(x => x.id === expandedGame);
+    if (g) {
+      const inp = document.getElementById('cost-input-' + expandedGame);
+      if (inp && document.activeElement !== inp) {
+        inp.value = g.cost ? fmtBRL(parseFloat(g.cost)) : '';
+      }
+      renderSplit(g);
+    }
+  }
 }
 
 function renderGame(g, players, venues) {
