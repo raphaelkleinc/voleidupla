@@ -360,7 +360,7 @@ function renderGame(g) {
         <i class="ti ti-${isPayer?'star':'user'}" style="font-size:11px"></i>${esc(p.name)}</div>`;
     }).join('') || '<span style="color:var(--text3);font-size:12px">Cadastre jogadores primeiro</span>';
 
-    detail = `<div class="game-detail open">
+    detail = `<div class="game-detail open" onclick="event.stopPropagation()">
       <div class="detail-section">
         <div class="detail-label">Confirmar presença</div>
         <div class="player-chips">${presenceChips}</div>
@@ -436,11 +436,12 @@ function renderSplit(g) {
       const hasPaid = isPayer || (g.paid||[]).includes(pid);
       const chip = isPayer
         ? `<i class="ti ti-check" style="color:var(--ok-text);font-size:18px"></i>`
-        : `<span onclick="togglePaid('${g.id}','${pid}')" style="cursor:pointer">
-             ${hasPaid
-               ? `<i class="ti ti-check" style="color:var(--ok-text);font-size:18px"></i>`
-               : `<span style="color:var(--text2)">R$ ${fmtBRL(per)}</span>`}
-           </span>`;
+        : hasPaid
+          ? `<i class="ti ti-check" onclick="event.stopPropagation();togglePaid('${g.id}','${pid}')" style="color:var(--ok-text);font-size:18px;cursor:pointer" title="Clique para desfazer"></i>`
+          : `<button onclick="event.stopPropagation();togglePaid('${g.id}','${pid}')"
+               style="background:var(--ok-bg);border:0.5px solid var(--ok-bdr);color:var(--ok-text);border-radius:20px;padding:3px 12px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit">
+               Pagar
+             </button>`;
       return `<div class="split-row"><span class="sname">${esc(p?p.name:'?')}</span><span class="sval">${chip}</span></div>`;
     }).join('');
 }
