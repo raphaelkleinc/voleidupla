@@ -381,34 +381,53 @@ function renderGame(g) {
 
   let detail = '';
   if (isExp) {
+    const confirmedBadges = confirmed.map(pid => {
+      const p = players.find(x => x.id===pid);
+      return p ? `<span class="acc-badge confirmed" onclick="event.stopPropagation();toggleConfirm('${g.id}','${p.id}')" title="Clique para remover">✓ ${esc(p.name)}</span>` : '';
+    }).join('');
     const presenceChips = players.length
-      ? players.map(p => {
-          const ok = confirmed.includes(p.id);
-          return `<div class="player-row${ok?' confirmed':''}" onclick="event.stopPropagation();toggleConfirm('${g.id}','${p.id}')">
-            <div class="player-row-check">${ok?'✓':''}</div>
-            <span class="player-row-name">${esc(p.name)}</span>
-          </div>`;
-        }).join('')
-      : '<p style="color:var(--text3);font-size:12px;padding:.5rem">Cadastre jogadores primeiro</p>';
+      ? `<div class="acc-selected">${confirmedBadges}</div>
+         <div class="acc-trigger" id="acc-p-${g.id}" onclick="event.stopPropagation();toggleAcc('acc-p-${g.id}','acc-pd-${g.id}')">
+           <span class="acc-trigger-label"><i class="ti ti-users" style="font-size:12px;margin-right:4px"></i>Jogadores</span>
+           <span class="acc-arrow">▼</span>
+         </div>
+         <div class="acc-dropdown" id="acc-pd-${g.id}">
+           ${players.map(p => {
+             const ok = confirmed.includes(p.id);
+             return `<div class="acc-item${ok?' active':''}" onclick="event.stopPropagation();toggleConfirm('${g.id}','${p.id}')">
+               <div class="acc-dot"></div>${esc(p.name)}
+             </div>`;
+           }).join('')}
+         </div>`
+      : '<p style="color:var(--text3);font-size:12px">Cadastre jogadores primeiro</p>';
 
+    const payerBadge = g.payerId
+      ? (() => { const pp = players.find(x => x.id===g.payerId); return pp ? `<span class="acc-badge payer" onclick="event.stopPropagation();setPayer('${g.id}','${pp.id}')" title="Clique para remover">★ ${esc(pp.name)}</span>` : ''; })()
+      : '';
     const payerChips = players.length
-      ? players.map(p => {
-          const isPayer = g.payerId===p.id;
-          return `<div class="player-row${isPayer?' payer':''}" onclick="event.stopPropagation();setPayer('${g.id}','${p.id}')">
-            <div class="player-row-check">${isPayer?'★':''}</div>
-            <span class="player-row-name">${esc(p.name)}</span>
-          </div>`;
-        }).join('')
-      : '<p style="color:var(--text3);font-size:12px;padding:.5rem">Cadastre jogadores primeiro</p>';
+      ? `<div class="acc-selected">${payerBadge}</div>
+         <div class="acc-trigger" id="acc-w-${g.id}" onclick="event.stopPropagation();toggleAcc('acc-w-${g.id}','acc-wd-${g.id}')">
+           <span class="acc-trigger-label"><i class="ti ti-credit-card" style="font-size:12px;margin-right:4px"></i>Selecionar pagador</span>
+           <span class="acc-arrow">▼</span>
+         </div>
+         <div class="acc-dropdown" id="acc-wd-${g.id}">
+           ${players.map(p => {
+             const isPayer = g.payerId===p.id;
+             return `<div class="acc-item${isPayer?' active-payer':''}" onclick="event.stopPropagation();setPayer('${g.id}','${p.id}')">
+               <div class="acc-dot"></div>${esc(p.name)}
+             </div>`;
+           }).join('')}
+         </div>`
+      : '<p style="color:var(--text3);font-size:12px">Cadastre jogadores primeiro</p>';
 
     detail = `<div class="game-detail open" onclick="event.stopPropagation()">
       <div class="detail-section">
         <div class="detail-label">Confirmar presença</div>
-        <div class="player-list">${presenceChips}</div>
+        <div>${presenceChips}</div>
       </div>
       <div class="detail-section">
         <div class="detail-label">Quem pagou a quadra?</div>
-        <div class="player-list">${payerChips}</div>
+        <div>${payerChips}</div>
       </div>
       <div class="detail-section">
         <div class="detail-label">Valor total da quadra (R$)</div>
@@ -669,10 +688,24 @@ function pinClear() {
   document.getElementById('pinDisplay').style.color = 'var(--text)';
 }
 
+function toggleAcc(triggerId, dropdownId) {
+  const trigger  = document.getElementById(triggerId);
+  const dropdown = document.getElementById(dropdownId);
+  if (!trigger || !dropdown) return;
+  const isOpen = dropdown.classList.contains('open');
+  // close all other accordions first
+  document.querySelectorAll('.acc-trigger.open').forEach(t => t.classList.remove('open'));
+  document.querySelectorAll('.acc-dropdown.open').forEach(d => d.classList.remove('open'));
+  if (!isOpen) {
+    trigger.classList.add('open');
+    dropdown.classList.add('open');
+  }
+}
+
 // ── expor ao window para onclick= no HTML ──────────────────────
 Object.assign(window, {
   changeMonth, openModal, closeModal, switchTab,
-  requirePin, pinPress, pinClear,
+  requirePin, pinPress, pinClear, toggleAcc,
   addPlayer, removePlayer, addVenue, removeVenue,
   addGame, removeGame, toggleExpand, toggleConfirm,
   setPayer, togglePaid, onCostInput, saveCost,
