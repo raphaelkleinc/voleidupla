@@ -3,53 +3,95 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🏐 Vôlei</title>
+<title>🏐 Dupla de Domingo</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg:#ffffff; --bg2:#f5f5f4; --bg3:#eeece8;
-  --text:#1a1a1a; --text2:#6b6b6b; --text3:#a0a09a;
-  --border:rgba(0,0,0,.12); --border2:rgba(0,0,0,.22);
+  --bg:#fffdf8; --bg2:#f5efe2; --bg3:#ede4d0;
+  --text:#1f1a10; --text2:#7a6a50; --text3:#b0a080;
+  --border:rgba(180,140,60,.18); --border2:rgba(180,140,60,.35);
   --radius-md:8px; --radius-lg:12px;
-  --info-bg:#e6f1fb;   --info-text:#185fa5;  --info-bdr:rgba(24,95,165,.3);
+  --accent:#e86c1a; --accent-light:#fff0e6; --accent-bdr:rgba(232,108,26,.35);
+  --cyan:#0891b2;   --cyan-light:#e0f7fc;   --cyan-bdr:rgba(8,145,178,.3);
+  --info-bg:#e0f7fc;   --info-text:#0891b2;  --info-bdr:rgba(8,145,178,.3);
   --ok-bg:#eaf3de;     --ok-text:#3b6d11;    --ok-bdr:rgba(59,109,17,.3);
-  --warn-bg:#faeeda;   --warn-text:#854f0b;  --warn-bdr:rgba(133,79,11,.3);
+  --warn-bg:#fff0e6;   --warn-text:#c05010;  --warn-bdr:rgba(200,80,20,.3);
   --danger-bg:#fcebeb; --danger-text:#a32d2d;--danger-bdr:rgba(163,45,45,.3);
 }
 @media (prefers-color-scheme:dark) {
   :root {
-    --bg:#1c1c1a; --bg2:#252523; --bg3:#2e2e2b;
-    --text:#f0ede8; --text2:#9e9b95; --text3:#5c5b56;
-    --border:rgba(255,255,255,.1); --border2:rgba(255,255,255,.2);
-    --info-bg:#0c447c;  --info-text:#b5d4f4;
-    --ok-bg:#27500a;    --ok-text:#c0dd97;
-    --warn-bg:#633806;  --warn-text:#fac775;
-    --danger-bg:#791f1f;--danger-text:#f7c1c1;
+    --bg:#1a1610; --bg2:#241e14; --bg3:#2e261a;
+    --text:#f5ead0; --text2:#a8916a; --text3:#6b5a3a;
+    --border:rgba(200,160,80,.15); --border2:rgba(200,160,80,.3);
+    --accent:#f07830; --accent-light:#3a1f08; --accent-bdr:rgba(240,120,48,.3);
+    --cyan:#22d3ee;   --cyan-light:#0c2a33;   --cyan-bdr:rgba(34,211,238,.25);
+    --info-bg:#0c2a33;   --info-text:#22d3ee;
+    --ok-bg:#1a3008;     --ok-text:#7ec44a;
+    --warn-bg:#3a1f08;   --warn-text:#f07830;  --warn-bdr:rgba(240,120,48,.3);
+    --danger-bg:#2a0a0a; --danger-text:#f08080;--danger-bdr:rgba(240,128,128,.3);
   }
 }
-body { font-family:system-ui,-apple-system,sans-serif; background:var(--bg3); color:var(--text); font-size:14px; min-height:100vh; }
-.app { max-width:680px; margin:0 auto; padding-bottom:4rem; }
-.header { background:var(--bg); border-bottom:0.5px solid var(--border); padding:1rem 1.25rem; position:sticky; top:0; z-index:100; }
+body {
+  font-family:system-ui,-apple-system,sans-serif;
+  color:var(--text); font-size:14px; min-height:100vh;
+  background-color:var(--bg3);
+  position:relative;
+}
+body::before {
+  content:'';
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image: url('img/WaterMark.png');
+  background-repeat: no-repeat;
+  background-size: 90% auto;
+  background-position: center 120px;
+  opacity: 0.09;
+}
+.app { position:relative; z-index:1; }
+.app { max-width:680px; margin:0 auto; padding-bottom:4rem; position:relative; z-index:1; }
+.header {
+  background:#1a0a2e;
+  border-bottom:none;
+  padding:0;
+  position:sticky; top:0; z-index:100;
+  overflow:hidden;
+}
+.header-bg {
+  position:absolute; inset:0;
+  background-image: url('img/Header.png');
+  background-size:cover; background-position:center 30%;
+  z-index:0;
+}
+.header-bg::after {
+  content:'';
+  position:absolute; inset:0;
+  background:linear-gradient(to bottom, rgba(20,5,40,.45) 0%, rgba(20,5,40,.15) 60%, rgba(20,5,40,.7) 100%);
+}
+.header-inner { padding:.75rem 1.25rem 0; position:relative; z-index:2; }
+.header-wave { display:block; width:100%; height:32px; margin-top:-.5rem; position:relative; z-index:2; }
 .header-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:.75rem; }
-.app-title { font-size:18px; font-weight:500; display:flex; align-items:center; gap:8px; }
+.app-title { font-size:18px; font-weight:700; display:flex; align-items:center; gap:8px; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.25); }
 .header-actions { display:flex; gap:8px; }
 .month-nav { display:flex; align-items:center; justify-content:center; gap:1rem; }
-.month-label { font-size:15px; font-weight:500; min-width:160px; text-align:center; }
-.nav-btn { background:none; border:none; cursor:pointer; color:var(--text2); font-size:18px; padding:4px 8px; border-radius:var(--radius-md); line-height:1; }
-.nav-btn:hover { background:var(--bg2); color:var(--text); }
-.btn { background:transparent; border:0.5px solid var(--border2); border-radius:var(--radius-md); padding:6px 12px; font-size:13px; color:var(--text); cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:background .15s; font-family:inherit; }
-.btn:hover { background:var(--bg2); }
+.month-label { font-size:15px; font-weight:700; min-width:160px; text-align:center; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.25); }
+.nav-btn { background:rgba(255,255,255,.2); border:none; cursor:pointer; color:#fff; font-size:18px; padding:4px 8px; border-radius:var(--radius-md); line-height:1; }
+.nav-btn:hover { background:rgba(255,255,255,.35); }
+.btn { background:rgba(255,255,255,.25); border:0.5px solid rgba(255,255,255,.5); border-radius:var(--radius-md); padding:6px 12px; font-size:13px; color:#fff; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:background .15s; font-family:inherit; }
+.btn:hover { background:rgba(255,255,255,.4); }
+.body .btn, .modal .btn, .split-result .btn, .copy-btns .btn, .game-actions-row .btn, .modal-actions .btn, .tab-bar .tab-btn { background:transparent; border-color:var(--border2); color:var(--text); }
+.body .btn:hover, .modal .btn:hover, .copy-btns .btn:hover, .game-actions-row .btn:hover, .modal-actions .btn:hover { background:var(--bg2); }
 .btn-sm { padding:4px 8px; font-size:12px; }
-.btn-primary { background:var(--info-bg); border-color:var(--info-bdr); color:var(--info-text); font-weight:500; }
-.btn-primary:hover { opacity:.85; }
+.btn-primary { background:rgba(255,255,255,.9); border-color:rgba(255,255,255,.9); color:var(--accent); font-weight:700; }
+.btn-primary:hover { background:#fff; }
+.body .btn-primary, .modal .btn-primary, .modal-actions .btn-primary { background:var(--accent); border-color:var(--accent-bdr); color:#fff; font-weight:600; }
+.body .btn-primary:hover, .modal .btn-primary:hover, .modal-actions .btn-primary:hover { opacity:.88; }
 .btn-danger { border-color:var(--danger-bdr); color:var(--danger-text); }
 .btn-danger:hover { background:var(--danger-bg); }
 .body { padding:1rem 1.25rem; }
 .game-list { display:flex; flex-direction:column; gap:.75rem; }
 .game-card { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:1rem 1.25rem; cursor:pointer; transition:border-color .15s; }
 .game-card:hover { border-color:var(--border2); }
-.game-card.expanded { border-color:var(--info-bdr); }
+.game-card.expanded { border-color:var(--accent-bdr); border-left:3px solid var(--accent); }
 .game-header { display:flex; align-items:flex-start; justify-content:space-between; gap:.5rem; }
 .game-info { flex:1; min-width:0; }
 .game-date-line { font-size:15px; font-weight:500; display:flex; align-items:center; gap:8px; }
@@ -124,22 +166,33 @@ body { font-family:system-ui,-apple-system,sans-serif; background:var(--bg3); co
 <body>
 <div class="app">
   <div class="header">
-    <div class="header-top">
-      <div class="app-title">
-        <i class="ti ti-ball-volleyball"></i>
-        <span>Vôlei do Grupo</span>
-        <span class="sync-dot" title="Sincronizado em tempo real"></span>
+    <div class="header-bg"></div>
+    <div class="header-inner">
+      <div class="header-top" style="margin-bottom:.5rem">
+        <div class="app-title">
+          <svg width="28" height="28" viewBox="0 0 100 100" style="flex-shrink:0;filter:drop-shadow(0 1px 3px rgba(0,0,0,.3))">
+            <circle cx="50" cy="50" r="48" fill="#f5e030" stroke="#d4a800" stroke-width="2"/>
+            <path d="M50,2 Q80,20 78,50 Q80,80 50,98 Q20,80 22,50 Q20,20 50,2Z" fill="white" opacity=".85"/>
+            <path d="M2,50 Q20,30 50,32 Q80,30 98,50" fill="none" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round"/>
+            <path d="M2,50 Q20,70 50,68 Q80,70 98,50" fill="none" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round"/>
+          </svg>
+          <span>Dupla de Domingo</span>
+          <span class="sync-dot" style="background:rgba(255,255,255,.8)" title="Sincronizado em tempo real"></span>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-sm" onclick="requirePin('managersModal')"><i class="ti ti-settings"></i> Cadastros</button>
+          <button class="btn btn-primary btn-sm" onclick="requirePin('addGameModal')"><i class="ti ti-plus"></i> Novo jogo</button>
+        </div>
       </div>
-      <div class="header-actions">
-        <button class="btn btn-sm" onclick="requirePin('managersModal')"><i class="ti ti-settings"></i> Cadastros</button>
-        <button class="btn btn-primary btn-sm" onclick="requirePin('addGameModal')"><i class="ti ti-plus"></i> Novo jogo</button>
+      <div class="month-nav" style="padding-bottom:.6rem">
+        <button class="nav-btn" onclick="changeMonth(-1)"><i class="ti ti-chevron-left"></i></button>
+        <span class="month-label" id="monthLabel">—</span>
+        <button class="nav-btn" onclick="changeMonth(1)"><i class="ti ti-chevron-right"></i></button>
       </div>
     </div>
-    <div class="month-nav">
-      <button class="nav-btn" onclick="changeMonth(-1)"><i class="ti ti-chevron-left"></i></button>
-      <span class="month-label" id="monthLabel">—</span>
-      <button class="nav-btn" onclick="changeMonth(1)"><i class="ti ti-chevron-right"></i></button>
-    </div>
+    <svg class="header-wave" viewBox="0 0 680 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,8 C80,24 160,0 240,14 C320,28 400,4 480,16 C560,28 640,8 680,12 L680,28 L0,28 Z" fill="var(--bg3)" opacity="1"/>
+    </svg>
   </div>
   <div class="body">
     <div class="game-list" id="gameList">
