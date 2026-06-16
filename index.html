@@ -66,11 +66,18 @@ body { font-family:system-ui,-apple-system,sans-serif; background:var(--bg3); co
 .game-detail.open { display:block; }
 .detail-section { margin-bottom:1rem; }
 .detail-label { font-size:11px; color:var(--text3); font-weight:500; text-transform:uppercase; letter-spacing:.05em; margin-bottom:.5rem; }
-.player-chips { display:flex; flex-wrap:wrap; gap:6px; }
-.player-chip { background:var(--bg2); border:0.5px solid var(--border); border-radius:20px; padding:5px 12px; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all .15s; user-select:none; }
-.player-chip:hover { border-color:var(--border2); }
-.player-chip.confirmed { background:var(--ok-bg); border-color:var(--ok-bdr); color:var(--ok-text); }
-.player-chip.payer { background:var(--warn-bg); border-color:var(--warn-bdr); color:var(--warn-text); }
+.player-list { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--radius-md); max-height:200px; overflow-y:auto; }
+.player-row { display:flex; align-items:center; gap:10px; padding:8px 12px; border-bottom:0.5px solid var(--border); cursor:pointer; transition:background .12s; user-select:none; }
+.player-row:last-child { border-bottom:none; }
+.player-row:hover { background:var(--bg3); }
+.player-row.confirmed { background:var(--ok-bg); }
+.player-row.confirmed .player-row-name { color:var(--ok-text); font-weight:500; }
+.player-row.payer { background:var(--warn-bg); }
+.player-row.payer .player-row-name { color:var(--warn-text); font-weight:500; }
+.player-row-check { width:18px; height:18px; border-radius:4px; border:1.5px solid var(--border2); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:11px; transition:all .12s; }
+.player-row.confirmed .player-row-check { background:var(--ok-text); border-color:var(--ok-text); color:white; }
+.player-row.payer .player-row-check { background:var(--warn-text); border-color:var(--warn-text); color:white; }
+.player-row-name { font-size:13px; color:var(--text); flex:1; }
 .cost-input { padding:7px 10px; border:0.5px solid var(--border2); border-radius:var(--radius-md); background:var(--bg2); color:var(--text); font-size:13px; width:180px; font-family:inherit; }
 .split-result { background:var(--bg2); border-radius:var(--radius-md); padding:.75rem 1rem; font-size:13px; margin-top:.5rem; }
 .split-row { display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:0.5px solid var(--border); }
@@ -374,26 +381,34 @@ function renderGame(g) {
 
   let detail = '';
   if (isExp) {
-    const presenceChips = players.map(p => {
-      const ok = confirmed.includes(p.id);
-      return `<div class="player-chip${ok?' confirmed':''}" onclick="event.stopPropagation();toggleConfirm('${g.id}','${p.id}')">
-        <i class="ti ti-${ok?'check':'plus'}" style="font-size:11px"></i>${esc(p.name)}</div>`;
-    }).join('') || '<span style="color:var(--text3);font-size:12px">Cadastre jogadores primeiro</span>';
+    const presenceChips = players.length
+      ? players.map(p => {
+          const ok = confirmed.includes(p.id);
+          return `<div class="player-row${ok?' confirmed':''}" onclick="event.stopPropagation();toggleConfirm('${g.id}','${p.id}')">
+            <div class="player-row-check">${ok?'✓':''}</div>
+            <span class="player-row-name">${esc(p.name)}</span>
+          </div>`;
+        }).join('')
+      : '<p style="color:var(--text3);font-size:12px;padding:.5rem">Cadastre jogadores primeiro</p>';
 
-    const payerChips = players.map(p => {
-      const isPayer = g.payerId===p.id;
-      return `<div class="player-chip${isPayer?' payer':''}" onclick="event.stopPropagation();setPayer('${g.id}','${p.id}')">
-        <i class="ti ti-${isPayer?'star':'user'}" style="font-size:11px"></i>${esc(p.name)}</div>`;
-    }).join('') || '<span style="color:var(--text3);font-size:12px">Cadastre jogadores primeiro</span>';
+    const payerChips = players.length
+      ? players.map(p => {
+          const isPayer = g.payerId===p.id;
+          return `<div class="player-row${isPayer?' payer':''}" onclick="event.stopPropagation();setPayer('${g.id}','${p.id}')">
+            <div class="player-row-check">${isPayer?'★':''}</div>
+            <span class="player-row-name">${esc(p.name)}</span>
+          </div>`;
+        }).join('')
+      : '<p style="color:var(--text3);font-size:12px;padding:.5rem">Cadastre jogadores primeiro</p>';
 
     detail = `<div class="game-detail open" onclick="event.stopPropagation()">
       <div class="detail-section">
         <div class="detail-label">Confirmar presença</div>
-        <div class="player-chips">${presenceChips}</div>
+        <div class="player-list">${presenceChips}</div>
       </div>
       <div class="detail-section">
         <div class="detail-label">Quem pagou a quadra?</div>
-        <div class="player-chips">${payerChips}</div>
+        <div class="player-list">${payerChips}</div>
       </div>
       <div class="detail-section">
         <div class="detail-label">Valor total da quadra (R$)</div>
