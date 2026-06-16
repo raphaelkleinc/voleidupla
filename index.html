@@ -108,6 +108,9 @@ body { font-family:system-ui,-apple-system,sans-serif; background:var(--bg3); co
 @keyframes spin { to { transform:rotate(360deg); } }
 @keyframes volleyball-spin { 0%{transform:rotate(0deg) scale(1)} 25%{transform:rotate(90deg) scale(1.08)} 50%{transform:rotate(180deg) scale(1)} 75%{transform:rotate(270deg) scale(1.08)} 100%{transform:rotate(360deg) scale(1)} }
 .vball { width:22px; height:22px; flex-shrink:0; animation:volleyball-spin 3s linear infinite; filter:drop-shadow(0 1px 2px rgba(0,0,0,.18)); }
+.pin-btn { background:var(--bg2); border:0.5px solid var(--border2); border-radius:var(--radius-lg); padding:14px; font-size:22px; font-weight:600; cursor:pointer; font-family:inherit; color:var(--text); transition:background .15s; }
+.pin-btn:hover { background:var(--bg3); }
+.pin-btn:active { transform:scale(.93); }
 @media (max-width:480px) { .header { padding:.75rem 1rem; } .body { padding:.75rem 1rem; } .app-title span { display:none; } }
 </style>
 </head>
@@ -121,8 +124,8 @@ body { font-family:system-ui,-apple-system,sans-serif; background:var(--bg3); co
         <span class="sync-dot" title="Sincronizado em tempo real"></span>
       </div>
       <div class="header-actions">
-        <button class="btn btn-sm" onclick="openModal('managersModal')"><i class="ti ti-settings"></i> Cadastros</button>
-        <button class="btn btn-primary btn-sm" onclick="openModal('addGameModal')"><i class="ti ti-plus"></i> Novo jogo</button>
+        <button class="btn btn-sm" onclick="requirePin('managersModal')"><i class="ti ti-settings"></i> Cadastros</button>
+        <button class="btn btn-primary btn-sm" onclick="requirePin('addGameModal')"><i class="ti ti-plus"></i> Novo jogo</button>
       </div>
     </div>
     <div class="month-nav">
@@ -198,6 +201,29 @@ body { font-family:system-ui,-apple-system,sans-serif; background:var(--bg3); co
       <button class="btn" onclick="closeModal('copyModal')">Fechar</button>
       <button class="btn btn-primary" id="copyBtn" onclick="doCopy()"><i class="ti ti-copy"></i> Copiar</button>
     </div>
+  </div>
+</div>
+
+<!-- Modal PIN -->
+<div class="modal-bg" id="pinModal">
+  <div class="modal" style="max-width:320px;text-align:center">
+    <h2 style="justify-content:center"><i class="ti ti-lock"></i> Senha de acesso</h2>
+    <div id="pinDisplay" style="font-size:32px;letter-spacing:12px;font-weight:700;margin:1rem 0;min-height:48px;color:var(--text)">——————</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem">
+      <button class="pin-btn" onclick="pinPress('1')">1</button>
+      <button class="pin-btn" onclick="pinPress('2')">2</button>
+      <button class="pin-btn" onclick="pinPress('3')">3</button>
+      <button class="pin-btn" onclick="pinPress('4')">4</button>
+      <button class="pin-btn" onclick="pinPress('5')">5</button>
+      <button class="pin-btn" onclick="pinPress('6')">6</button>
+      <button class="pin-btn" onclick="pinPress('7')">7</button>
+      <button class="pin-btn" onclick="pinPress('8')">8</button>
+      <button class="pin-btn" onclick="pinPress('9')">9</button>
+      <button class="pin-btn pin-clear" onclick="pinClear()" style="font-size:18px">⌫</button>
+      <button class="pin-btn" onclick="pinPress('0')">0</button>
+      <button class="pin-btn" onclick="closeModal('pinModal')" style="font-size:12px;color:var(--text2)">Cancelar</button>
+    </div>
+    <div id="pinError" style="color:var(--danger-text);font-size:13px;min-height:20px"></div>
   </div>
 </div>
 
@@ -410,7 +436,7 @@ function renderGame(g) {
       </div>
       <div class="game-actions-row" onclick="event.stopPropagation()">
         <button class="btn btn-sm" style="color:var(--text2)" onclick="toggleExpand('${g.id}')"><i class="ti ti-chevron-${isExp?'up':'down'}"></i></button>
-        <button class="btn btn-sm btn-danger" onclick="removeGame('${g.id}')"><i class="ti ti-trash"></i></button>
+        <button class="btn btn-sm btn-danger" onclick="requirePin('deleteGame','${g.id}')"><i class="ti ti-trash"></i></button>
       </div>
     </div>
     ${detail}
@@ -579,9 +605,59 @@ function doCopy() {
   setTimeout(() => { btn.innerHTML = '<i class="ti ti-copy"></i> Copiar'; }, 1800);
 }
 
+// ── PIN ───────────────────────────────────────────────────────
+const PIN_CORRECT = '465689';
+let pinBuffer = '';
+let pinTarget = null;
+let pinTargetId = null;
+
+function requirePin(target, id='') {
+  pinBuffer = '';
+  pinTarget = target;
+  pinTargetId = id;
+  document.getElementById('pinDisplay').textContent = '——————';
+  document.getElementById('pinError').textContent = '';
+  openModal('pinModal');
+}
+function pinPress(digit) {
+  if (pinBuffer.length >= 6) return;
+  pinBuffer += digit;
+  document.getElementById('pinDisplay').textContent =
+    '●'.repeat(pinBuffer.length) + '—'.repeat(6 - pinBuffer.length);
+  if (pinBuffer.length === 6) {
+    setTimeout(() => {
+      if (pinBuffer === PIN_CORRECT) {
+        closeModal('pinModal');
+        if (pinTarget === 'deleteGame') {
+          removeGame(pinTargetId);
+        } else {
+          openModal(pinTarget);
+        }
+      } else {
+        document.getElementById('pinError').textContent = 'Senha incorreta. Tente novamente.';
+        document.getElementById('pinDisplay').style.color = 'var(--danger-text)';
+        setTimeout(() => {
+          pinBuffer = '';
+          document.getElementById('pinDisplay').textContent = '——————';
+          document.getElementById('pinDisplay').style.color = 'var(--text)';
+          document.getElementById('pinError').textContent = '';
+        }, 900);
+      }
+    }, 120);
+  }
+}
+function pinClear() {
+  pinBuffer = pinBuffer.slice(0, -1);
+  document.getElementById('pinDisplay').textContent =
+    '●'.repeat(pinBuffer.length) + '—'.repeat(6 - pinBuffer.length);
+  document.getElementById('pinError').textContent = '';
+  document.getElementById('pinDisplay').style.color = 'var(--text)';
+}
+
 // ── expor ao window para onclick= no HTML ──────────────────────
 Object.assign(window, {
   changeMonth, openModal, closeModal, switchTab,
+  requirePin, pinPress, pinClear,
   addPlayer, removePlayer, addVenue, removeVenue,
   addGame, removeGame, toggleExpand, toggleConfirm,
   setPayer, togglePaid, onCostInput, saveCost,
