@@ -35,18 +35,13 @@
 body {
   font-family:system-ui,-apple-system,sans-serif;
   color:var(--text); font-size:14px; min-height:100vh;
-  background-color:var(--bg3);
+  background: linear-gradient(160deg, #ffffff 0%, #f8f0ff 40%, #ffe8f5 70%, #ffd6f0 100%);
   position:relative;
 }
-body::before {
-  content:'';
-  position:fixed; inset:0; z-index:0; pointer-events:none;
-  background-image: url('https://raw.githubusercontent.com/raphaelkleinc/voleidupla/main/img/WaterMark.png');
-  background-repeat: no-repeat;
-  background-size: 90% auto;
-  background-position: center 120px;
-  opacity: 0.09;
+@media (prefers-color-scheme:dark) {
+  body { background: linear-gradient(160deg, #1a1020 0%, #1f1228 40%, #241018 70%, #1a0d18 100%); }
 }
+
 .app { position:relative; z-index:1; }
 .app { max-width:680px; margin:0 auto; padding-bottom:4rem; position:relative; z-index:1; }
 .header {
@@ -58,7 +53,7 @@ body::before {
 }
 .header-bg {
   position:absolute; inset:0;
-  background-image: url('https://raw.githubusercontent.com/raphaelkleinc/voleidupla/main/img/Header.png');
+  background-image: url('https://raw.githubusercontent.com/raphaelkleinc/voleidupla/main/img/header2.png');
   background-size:cover; background-position:center 30%;
   z-index:0;
 }
@@ -89,7 +84,7 @@ body::before {
 .btn-danger:hover { background:var(--danger-bg); }
 .body { padding:1rem 1.25rem; }
 .game-list { display:flex; flex-direction:column; gap:.75rem; }
-.game-card { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:1rem 1.25rem; cursor:pointer; transition:border-color .15s; }
+.game-card { background:rgba(255,255,255,0.92); border:0.5px solid var(--border); border-radius:var(--radius-lg); padding:1rem 1.25rem; cursor:pointer; transition:border-color .15s; box-shadow:0 2px 12px rgba(180,80,180,.07); }
 .game-card:hover { border-color:var(--border2); }
 .game-card.expanded { border-color:var(--accent-bdr); border-left:3px solid var(--accent); }
 .game-header { display:flex; align-items:flex-start; justify-content:space-between; gap:.5rem; }
