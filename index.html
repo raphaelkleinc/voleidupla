@@ -40,27 +40,48 @@ body {
 }
 @media (prefers-color-scheme:dark) {
   body { background: linear-gradient(160deg, #0a0a1a 0%, #0d1028 40%, #0a1020 70%, #080d18 100%); }
-  .game-card {
-    background: #0d1a35;
-    border-color: rgba(100,160,255,.15);
-    box-shadow: 0 2px 16px rgba(0,0,0,.4);
-    color: #e8f0ff;
+
+  .game-card,
+  .game-card *,
+  .game-card input,
+  .game-card select,
+  .game-card textarea {
+    background-color: #0d1a35 !important;
+    color: #d0e8ff !important;
+    border-color: rgba(100,160,255,.15) !important;
   }
-  .game-card .game-date-line { color:#e8f0ff; }
-  .game-card .game-meta { color:#8aabcc; }
-  .game-card .detail-label { color:#5a7a99; }
-  .game-card .acc-trigger { background:#112240; border-color:rgba(100,160,255,.15); color:#e8f0ff; }
-  .game-card .acc-dropdown { background:#112240; border-color:rgba(100,160,255,.15); }
-  .game-card .acc-item { color:#c8dff5; border-color:rgba(100,160,255,.08); }
-  .game-card .acc-item:hover { background:#1a3050; }
-  .game-card .cost-input { background:#112240; border-color:rgba(100,160,255,.2); color:#e8f0ff; }
-  .game-card .split-result { background:#112240; color:#c8dff5; }
-  .game-card .split-row { border-color:rgba(100,160,255,.08); }
-  .game-card .split-row .sname { color:#8aabcc; }
-  .game-card.expanded { border-color:rgba(100,160,255,.35); border-left:3px solid #4a9eff; }
-  .game-card .game-detail { border-color:rgba(100,160,255,.12); }
-  .body .btn { color:#c8dff5; border-color:rgba(100,160,255,.2); }
-  .body .btn:hover { background:#1a3050; }
+
+  .game-card { box-shadow: 0 2px 20px rgba(0,0,0,.5) !important; }
+  .game-card.expanded { border-left: 3px solid #4a9eff !important; }
+
+  .game-card .game-meta,
+  .game-card .detail-label,
+  .game-card .split-row .sname { color: #7aabcc !important; }
+
+  .game-card .acc-trigger  { background:#0a1628 !important; }
+  .game-card .acc-dropdown { background:#0a1628 !important; }
+  .game-card .acc-item:hover { background:#162844 !important; }
+  .game-card .split-result  { background:#0a1628 !important; }
+  .game-card .cost-input    { background:#0a1628 !important; }
+  .game-card .game-detail   { border-color:rgba(100,160,255,.12) !important; }
+
+  .game-card .acc-badge.confirmed { background:#1a4020 !important; color:#7ec44a !important; border-color:rgba(126,196,74,.3) !important; }
+  .game-card .acc-badge.payer     { background:#3a2008 !important; color:#f07830 !important; border-color:rgba(240,120,48,.3) !important; }
+  .game-card .acc-item.active       { color:#7ec44a !important; }
+  .game-card .acc-item.active-payer { color:#f07830 !important; }
+  .game-card .acc-dot               { border-color:rgba(100,160,255,.3) !important; }
+  .game-card .acc-item.active .acc-dot       { background:#7ec44a !important; border-color:#7ec44a !important; }
+  .game-card .acc-item.active-payer .acc-dot { background:#f07830 !important; border-color:#f07830 !important; }
+
+  .game-card .badge-blue  { background:#0c2a44 !important; color:#4ab8f0 !important; }
+  .game-card .badge-green { background:#1a4020 !important; color:#7ec44a !important; }
+  .game-card .badge-amber { background:#3a2008 !important; color:#f07830 !important; }
+
+  .game-card .btn { background:#0a1628 !important; color:#a0c8f0 !important; border-color:rgba(100,160,255,.2) !important; }
+  .game-card .btn:hover { background:#162844 !important; }
+  .game-card .btn-primary { background:#1a5fa8 !important; color:#fff !important; }
+
+  .empty-month { color:#7aabcc; }
   .body .btn-primary { background:#1a5fa8; border-color:#2a7fd8; color:#fff; }
 }
 
