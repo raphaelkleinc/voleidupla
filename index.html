@@ -50,11 +50,12 @@ body {
   padding:0;
   position:sticky; top:0; z-index:100;
   overflow:hidden;
+  height:160px;
 }
 .header-bg {
   position:absolute; inset:0;
   background-image: url('https://raw.githubusercontent.com/raphaelkleinc/voleidupla/main/img/header2.png');
-  background-size:cover; background-position:center 30%;
+  background-size:cover; background-position:center center;
   z-index:0;
 }
 .header-bg::after {
@@ -62,8 +63,7 @@ body {
   position:absolute; inset:0;
   background:linear-gradient(to bottom, rgba(20,5,40,.45) 0%, rgba(20,5,40,.15) 60%, rgba(20,5,40,.7) 100%);
 }
-.header-inner { padding:.75rem 1.25rem 0; position:relative; z-index:2; }
-.header-wave { display:block; width:100%; height:32px; margin-top:-.5rem; position:relative; z-index:2; }
+.header-inner { padding:.9rem 1.25rem 0; position:relative; z-index:2; }
 .header-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:.75rem; }
 .app-title { font-size:18px; font-weight:700; display:flex; align-items:center; gap:8px; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.25); }
 .header-actions { display:flex; gap:8px; }
@@ -185,12 +185,7 @@ body {
     <div class="header-inner">
       <div class="header-top" style="margin-bottom:.5rem">
         <div class="app-title">
-          <svg width="28" height="28" viewBox="0 0 100 100" style="flex-shrink:0;filter:drop-shadow(0 1px 3px rgba(0,0,0,.3))">
-            <circle cx="50" cy="50" r="48" fill="#f5e030" stroke="#d4a800" stroke-width="2"/>
-            <path d="M50,2 Q80,20 78,50 Q80,80 50,98 Q20,80 22,50 Q20,20 50,2Z" fill="white" opacity=".85"/>
-            <path d="M2,50 Q20,30 50,32 Q80,30 98,50" fill="none" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round"/>
-            <path d="M2,50 Q20,70 50,68 Q80,70 98,50" fill="none" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round"/>
-          </svg>
+
           <span>Dupla de Domingo</span>
           <span class="sync-dot" style="background:rgba(255,255,255,.8)" title="Sincronizado em tempo real"></span>
         </div>
@@ -205,9 +200,7 @@ body {
         <button class="nav-btn" onclick="changeMonth(1)"><i class="ti ti-chevron-right"></i></button>
       </div>
     </div>
-    <svg class="header-wave" viewBox="0 0 680 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0,8 C80,24 160,0 240,14 C320,28 400,4 480,16 C560,28 640,8 680,12 L680,28 L0,28 Z" fill="var(--bg3)" opacity="1"/>
-    </svg>
+
   </div>
   <div class="body">
     <div class="game-list" id="gameList">
