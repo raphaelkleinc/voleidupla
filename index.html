@@ -110,10 +110,6 @@ body {
 .header-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:.75rem; }
 .app-title { font-size:18px; font-weight:700; display:flex; align-items:center; gap:8px; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.25); }
 .header-actions { display:flex; gap:8px; }
-.month-nav { display:flex; align-items:center; justify-content:center; gap:1rem; }
-.month-label { font-size:15px; font-weight:700; min-width:160px; text-align:center; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.25); }
-.nav-btn { background:rgba(255,255,255,.2); border:none; cursor:pointer; color:#fff; font-size:18px; padding:4px 8px; border-radius:var(--radius-md); line-height:1; }
-.nav-btn:hover { background:rgba(255,255,255,.35); }
 .btn { background:rgba(255,255,255,.25); border:0.5px solid rgba(255,255,255,.5); border-radius:var(--radius-md); padding:6px 12px; font-size:13px; color:#fff; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:background .15s; font-family:inherit; }
 .btn:hover { background:rgba(255,255,255,.4); }
 .body .btn, .modal .btn, .split-result .btn, .copy-btns .btn, .game-actions-row .btn, .modal-actions .btn, .tab-bar .tab-btn { background:transparent; border-color:var(--border2); color:var(--text); }
@@ -168,6 +164,9 @@ body {
 .game-actions-row { display:flex; gap:6px; align-items:center; flex-shrink:0; }
 .empty-month { text-align:center; padding:3rem 1rem; color:var(--text2); }
 .empty-month i { font-size:40px; margin-bottom:.75rem; display:block; color:var(--text3); }
+.month-separator { display:flex; align-items:center; gap:12px; padding:.25rem 0; margin:.5rem 0; }
+.month-separator-line { flex:1; height:1px; background:var(--border2); }
+.month-separator-label { font-size:12px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.1em; white-space:nowrap; }
 .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:200; align-items:center; justify-content:center; padding:1rem; }
 .modal-bg.open { display:flex; }
 .modal { background:var(--bg); border-radius:var(--radius-lg); padding:1.5rem; width:100%; max-width:420px; border:0.5px solid var(--border); max-height:90vh; overflow-y:auto; }
@@ -237,11 +236,7 @@ body {
           <button class="btn btn-primary btn-sm" onclick="requirePin('addGameModal')"><i class="ti ti-plus"></i> Novo jogo</button>
         </div>
       </div>
-      <div class="month-nav" style="padding-bottom:.6rem">
-        <button class="nav-btn" onclick="changeMonth(-1)"><i class="ti ti-chevron-left"></i></button>
-        <span class="month-label" id="monthLabel">—</span>
-        <button class="nav-btn" onclick="changeMonth(1)"><i class="ti ti-chevron-right"></i></button>
-      </div>
+
     </div>
 
   </div>
@@ -359,8 +354,6 @@ const db  = getDatabase(app);
 
 // ── estado local ───────────────────────────────────────────────
 let players = [], venues = [], games = [];
-let currentYear  = new Date().getFullYear();
-let currentMonth = new Date().getMonth();
 let expandedGame = null;
 
 // ── listeners tempo real ───────────────────────────────────────
@@ -406,17 +399,10 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
 }
-function changeMonth(dir) {
-  currentMonth += dir;
-  if (currentMonth>11) { currentMonth=0; currentYear++; }
-  if (currentMonth<0)  { currentMonth=11; currentYear--; }
-  render();
-}
+
 
 // ── render ─────────────────────────────────────────────────────
 function render() {
-  document.getElementById('monthLabel').textContent = `${MONTHS_PT[currentMonth]} ${currentYear}`;
-
   // select de quadras
   document.getElementById('gVenue').innerHTML =
     '<option value="">Selecionar quadra...</option>' +
@@ -446,20 +432,32 @@ function render() {
       </div>`).join('')
     : '<p style="color:var(--text3);font-size:13px;text-align:center;padding:.5rem">Nenhuma quadra ainda</p>';
 
-  // jogos do mês
-  const monthGames = games.filter(g => {
-    const [y,m] = g.date.split('-');
-    return parseInt(y)===currentYear && parseInt(m)-1===currentMonth;
-  });
+  // todos os jogos em ordem cronológica com separadores de mês
   const listEl = document.getElementById('gameList');
-  if (!monthGames.length) {
-    listEl.innerHTML = `<div class="empty-month"><i class="ti ti-calendar-off"></i><p>Nenhum jogo em ${MONTHS_PT[currentMonth]}</p><p style="font-size:12px;margin-top:.5rem;color:var(--text3)">Clique em "+ Novo jogo" para marcar</p></div>`;
+  if (!games.length) {
+    listEl.innerHTML = `<div class="empty-month"><i class="ti ti-calendar-off"></i><p>Nenhum jogo marcado ainda</p><p style="font-size:12px;margin-top:.5rem;color:var(--text3)">Clique em "+ Novo jogo" para marcar</p></div>`;
     return;
   }
-  listEl.innerHTML = monthGames.map(g => renderGame(g)).join('');
+  let lastMonthKey = null;
+  let html = '';
+  for (const g of games) {
+    const [y, m] = g.date.split('-');
+    const monthKey = `${y}-${m}`;
+    if (monthKey !== lastMonthKey) {
+      const monthName = MONTHS_PT[parseInt(m)-1] + ' ' + y;
+      html += `<div class="month-separator">
+        <div class="month-separator-line"></div>
+        <span class="month-separator-label">${monthName}</span>
+        <div class="month-separator-line"></div>
+      </div>`;
+      lastMonthKey = monthKey;
+    }
+    html += renderGame(g);
+  }
+  listEl.innerHTML = html;
   // restaurar split do card expandido
   if (expandedGame) {
-    const g = monthGames.find(x => x.id===expandedGame);
+    const g = games.find(x => x.id===expandedGame);
     if (g) {
       const inp = document.getElementById('cost-input-'+expandedGame);
       if (inp && document.activeElement!==inp) inp.value = g.cost ? fmtBRL(g.cost) : '';
@@ -658,8 +656,6 @@ function addGame() {
     confirmed: [], payerId: null, cost: '', paid: []
   }).then(() => {
     closeModal('addGameModal');
-    const [y,m] = date.split('-');
-    currentYear = parseInt(y); currentMonth = parseInt(m)-1;
     showToast('Jogo marcado ✓');
   });
 }
@@ -808,7 +804,7 @@ function toggleAcc(triggerId, dropdownId) {
 
 // ── expor ao window para onclick= no HTML ──────────────────────
 Object.assign(window, {
-  changeMonth, openModal, closeModal, switchTab,
+  openModal, closeModal, switchTab,
   requirePin, pinPress, pinClear, toggleAcc,
   addPlayer, removePlayer, addVenue, removeVenue,
   addGame, removeGame, toggleExpand, toggleConfirm,
@@ -818,7 +814,6 @@ Object.assign(window, {
 
 // ── init ───────────────────────────────────────────────────────
 document.getElementById('gDate').value = new Date().toISOString().split('T')[0];
-document.getElementById('monthLabel').textContent = MONTHS_PT[currentMonth] + ' ' + new Date().getFullYear();
 </script>
 </body>
 </html>
