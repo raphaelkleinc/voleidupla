@@ -232,6 +232,7 @@ body {
           <span class="sync-dot" style="background:rgba(255,255,255,.8)" title="Sincronizado em tempo real"></span>
         </div>
         <div class="header-actions">
+          <button class="btn btn-sm" onclick="openModal('rulesModal')"><i class="ti ti-clipboard-list"></i> Regras</button>
           <button class="btn btn-sm" onclick="requirePin('managersModal')"><i class="ti ti-settings"></i> Cadastros</button>
           <button class="btn btn-primary btn-sm" onclick="requirePin('addGameModal')"><i class="ti ti-plus"></i> Novo jogo</button>
         </div>
@@ -295,6 +296,42 @@ body {
       <div class="list-scroll" id="venuesList"><p style="color:var(--text3);font-size:13px;text-align:center;padding:.5rem">Nenhuma quadra ainda</p></div>
     </div>
     <div class="modal-actions"><button class="btn" onclick="closeModal('managersModal')">Fechar</button></div>
+  </div>
+</div>
+
+<!-- Modal Regras -->
+<div class="modal-bg" id="rulesModal">
+  <div class="modal" style="max-width:480px">
+    <h2><i class="ti ti-clipboard-list"></i> Regulamento — Dupla de Domingo</h2>
+    <div style="display:flex;flex-direction:column;gap:1rem;font-size:13px;line-height:1.6">
+      <div>
+        <div style="font-weight:700;margin-bottom:3px">Art. 1 — Confirmação de presença</div>
+        <div style="color:var(--text2)">O prazo para confirmação é de até 2 horas antes do horário de início. Confirmações fora deste prazo não serão garantidas.</div>
+      </div>
+      <div>
+        <div style="font-weight:700;margin-bottom:3px">Art. 2 — Cancelamento</div>
+        <div style="color:var(--text2)">O prazo para cancelamento sem ônus financeiro é até a sexta-feira que antecede o jogo. Cancelamentos após este prazo implicam na cobrança integral da cota de quadra.</div>
+      </div>
+      <div>
+        <div style="font-weight:700;margin-bottom:3px">Art. 3 — Força maior</div>
+        <div style="color:var(--text2)">Em caso de impedimento por motivo de força maior após o prazo de cancelamento, é responsabilidade do jogador indicar um substituto para ocupar sua vaga.</div>
+      </div>
+      <div>
+        <div style="font-weight:700;margin-bottom:3px">Art. 4 — Convidados externos</div>
+        <div style="color:var(--text2)">Convites a jogadores externos somente são permitidos após a sexta-feira anterior ao jogo, assegurando prioridade aos membros. Exceção em casos de quorum insuficiente identificado antes desta data.</div>
+      </div>
+      <div>
+        <div style="font-weight:700;margin-bottom:3px">Art. 5 — Admissão de novos membros</div>
+        <div style="color:var(--text2)">A efetivação de visitantes como membros requer solicitação formal ao grupo, sujeita à aprovação por votação da maioria.</div>
+      </div>
+      <div>
+        <div style="font-weight:700;margin-bottom:3px">Art. 6 — Rodízio de quadras</div>
+        <div style="color:var(--text2)">As partidas serão realizadas em regime de alternância entre as quadras disponíveis, visando equilíbrio logístico e comodidade de todos os membros.</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('rulesModal')">Fechar</button>
+    </div>
   </div>
 </div>
 
