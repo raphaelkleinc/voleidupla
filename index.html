@@ -391,17 +391,17 @@ let players = [], venues = [], games = [];
 let expandedGame = null;
 
 // ── listeners tempo real ───────────────────────────────────────
-onValue(ref(db, 'volei/players'), snap => {
+onValue(ref(db, 'players'), snap => {
   const val = snap.val() || {};
   players = Object.entries(val).map(([id,d]) => ({id,...d})).sort((a,b) => a.name.localeCompare(b.name));
   render();
 });
-onValue(ref(db, 'volei/venues'), snap => {
+onValue(ref(db, 'venues'), snap => {
   const val = snap.val() || {};
   venues = Object.entries(val).map(([id,d]) => ({id,...d})).sort((a,b) => a.name.localeCompare(b.name));
   render();
 });
-onValue(ref(db, 'volei/games'), snap => {
+onValue(ref(db, 'games'), snap => {
   const val = snap.val() || {};
   games = Object.entries(val).map(([id,d]) => ({id,...d})).sort((a,b) => a.date.localeCompare(b.date));
   render();
@@ -648,7 +648,7 @@ function addPlayer() {
   const contact = document.getElementById('pContact').value.trim();
   const pix = document.getElementById('pPix').value.trim();
   if (!name) return showToast('Informe o nome');
-  push(ref(db,'volei/players'), {name,contact,pix}).then(() => {
+  push(ref(db,'players'), {name,contact,pix}).then(() => {
     document.getElementById('pName').value = '';
     document.getElementById('pContact').value = '';
     document.getElementById('pPix').value = '';
@@ -657,13 +657,13 @@ function addPlayer() {
 }
 function removePlayer(id) {
   if (!confirm('Remover jogador?')) return;
-  remove(ref(db,`volei/players/${id}`));
+  remove(ref(db,`players/${id}`));
 }
 function addVenue() {
   const name = document.getElementById('vName').value.trim();
   const address = document.getElementById('vAddress').value.trim();
   if (!name) return showToast('Informe o nome da quadra');
-  push(ref(db,'volei/venues'), {name,address}).then(() => {
+  push(ref(db,'venues'), {name,address}).then(() => {
     document.getElementById('vName').value = '';
     document.getElementById('vAddress').value = '';
     showToast('Quadra adicionada ✓');
@@ -671,7 +671,7 @@ function addVenue() {
 }
 function removeVenue(id) {
   if (!confirm('Remover quadra?')) return;
-  remove(ref(db,`volei/venues/${id}`));
+  remove(ref(db,`venues/${id}`));
 }
 
 // ── ações jogos ────────────────────────────────────────────────
@@ -683,7 +683,7 @@ function addGame() {
   if (!date) return showToast('Selecione a data');
   if (!venueId) return showToast('Selecione a quadra');
   const venue = venues.find(v => v.id===venueId);
-  push(ref(db,'volei/games'), {
+  push(ref(db,'games'), {
     date, start, end, venueId,
     venueName: venue ? venue.name : '',
     venueAddress: venue ? venue.address : '',
@@ -696,7 +696,7 @@ function addGame() {
 function removeGame(id) {
   if (!confirm('Excluir este jogo?')) return;
   if (expandedGame===id) expandedGame = null;
-  remove(ref(db,`volei/games/${id}`)).then(() => showToast('Jogo removido'));
+  remove(ref(db,`games/${id}`)).then(() => showToast('Jogo removido'));
 }
 function toggleExpand(id) {
   expandedGame = expandedGame===id ? null : id;
@@ -707,19 +707,19 @@ function toggleConfirm(gameId, playerId) {
   const arr = [...(g.confirmed||[])];
   const idx = arr.indexOf(playerId);
   if (idx>=0) arr.splice(idx,1); else arr.push(playerId);
-  update(ref(db,`volei/games/${gameId}`), {confirmed: arr});
+  update(ref(db,`games/${gameId}`), {confirmed: arr});
 }
 function setPayer(gameId, playerId) {
   const g = games.find(x => x.id===gameId); if (!g) return;
   const newPayer = g.payerId===playerId ? null : playerId;
-  update(ref(db,`volei/games/${gameId}`), {payerId: newPayer});
+  update(ref(db,`games/${gameId}`), {payerId: newPayer});
 }
 function togglePaid(gameId, playerId) {
   const g = games.find(x => x.id===gameId); if (!g) return;
   const paid = [...(g.paid||[])];
   const idx = paid.indexOf(playerId);
   if (idx>=0) paid.splice(idx,1); else paid.push(playerId);
-  update(ref(db,`volei/games/${gameId}`), {paid});
+  update(ref(db,`games/${gameId}`), {paid});
 }
 function onCostInput(event, gameId) {
   const g = games.find(x => x.id===gameId); if (!g) return;
@@ -730,7 +730,7 @@ function saveCost(gameId) {
   const inp = document.getElementById('cost-input-'+gameId); if (!inp) return;
   const val = parseBRL(inp.value);
   inp.value = val ? fmtBRL(val) : '';
-  update(ref(db,`volei/games/${gameId}`), {cost: val||''});
+  update(ref(db,`games/${gameId}`), {cost: val||''});
   const g = games.find(x => x.id===gameId);
   if (g) { g.cost = val||''; renderSplit(g); }
 }
